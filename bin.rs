@@ -9,6 +9,7 @@ extern crate time;
 
 mod constants;
 mod flappy_bird;
-mod flappy_main;
 mod game;
+mod main;
+mod sfml_start;
 mod window;
