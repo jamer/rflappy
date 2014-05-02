@@ -1,2 +1,2 @@
-pub static gameWidth: uint = 800;
-pub static gameHeight: uint = 600;
+pub static GAME_WIDTH: uint = 800;
+pub static GAME_HEIGHT: uint = 600;

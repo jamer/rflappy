@@ -1,2 +1,2 @@
-rflappy: constants.rs exe.rs main.rs window.rs
-	rustc exe.rs -L lib
+rflappy: bin.rs constants.rs flappy_bird.rs flappy_main.rs game.rs window.rs
+	rustc bin.rs -L lib

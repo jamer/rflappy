@@ -1,68 +1,75 @@
 // vi: ts=4 sw=4
 
-use rsfml::graphics::{RenderWindow, Color, CircleShape};
-use rsfml::window::{VideoMode, ContextSettings, event, keyboard, Close};
+use game::{Game, WindowStay, WindowClose};
+use rsfml::graphics::RenderWindow;
+use rsfml::window::{Close, ContextSettings, VideoMode};
+use rsfml::window::event;
+use time::precise_time_ns;
 
 pub struct Window {
-	pub window: RenderWindow,
-	pub settings: ContextSettings,
+	window: RenderWindow,
+	game: ~Game,
+	previous_frame_clock: u64,
 }
 
 impl Window {
-	pub fn new(width: uint, height: uint) -> Window {
-		let setting : ContextSettings = ContextSettings::default();
-		let mut renderWindow : RenderWindow =
-			match RenderWindow::new(VideoMode::new_init(width, height, 32),
-			                        "Flappy Bird",
+	pub fn new(title: &str, width: uint, height: uint, game: ~Game) -> Window {
+		let setting: ContextSettings = ContextSettings::default();
+		let bits_per_pixel = 32;
+		let mut window: RenderWindow =
+			match RenderWindow::new(VideoMode::new_init(width, height, bits_per_pixel),
+			                        title,
 			                        Close,
 			                        &setting) {
-			Some(renderWindow) => renderWindow,
+			Some(window) => window,
 			None => fail!("Cannot create a new Render Window.")
 		};
-		renderWindow.set_vertical_sync_enabled(true);
+		window.set_vertical_sync_enabled(true);
 
 		Window {
-			window: renderWindow,
-			settings: setting,
+			window: window,
+			game: game,
+			previous_frame_clock: 0,
 		}
 	}
 
 	pub fn event_loop(&mut self) -> () {
 		while self.window.is_open() {
 			self.pump_events();
-			self.draw();
+			match self.previous_frame_clock {
+				0 => {
+					self.init_clock();
+				},
+				_ => {
+					let millis: int = self.milliseconds_since_last_frame();
+					self.game.update(millis);
+				}
+			}
+			self.game.draw(&mut self.window);
 		}
 	}
 
-	fn pump_events(&mut self) -> () {
+	fn init_clock(&mut self) {
+		self.previous_frame_clock = precise_time_ns();
+	}
+
+	fn milliseconds_since_last_frame(&mut self) -> int {
+		let now_clock: u64 = precise_time_ns();
+		let milliseconds: int = ((now_clock - self.previous_frame_clock) / 1_000_000) as int;
+		self.previous_frame_clock = now_clock;
+
+		milliseconds
+	}
+
+	fn pump_events(&mut self) {
 		loop {
 			match self.window.poll_event() {
 				event::NoEvent => { break }
-				e => { self.handle_event(e) }
+				e => match self.game.handle_event(e) {
+					WindowStay => {},
+					WindowClose => {self.window.close()},
+				}
 			}
 		}
-	}
-
-	fn handle_event(&mut self, e: event::Event) -> () {
-		match e {
-			event::Closed => {self.window.close();},
-			event::KeyPressed{code, ..} => match code {
-				keyboard::Escape => {self.window.close();},
-				keyboard::Space  => {},
-				_                => {}
-			} ,
-			_ => {}
-		}
-	}
-
-	fn draw(&mut self) -> () {
-		let mut shape: CircleShape = match CircleShape::new_init(100.0, 30) {
-			Some(shape) => shape,
-			None => fail!("Cannot create Circle Shape."),
-		};
-		shape.set_fill_color(&Color::green());
-		self.window.clear(&Color::black());
-		self.window.draw(&shape);
-		self.window.display()
 	}
 }
