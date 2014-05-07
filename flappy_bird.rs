@@ -1,7 +1,7 @@
 // vi: ts=4 sw=4
 
 use game::{Game, WindowAction, WindowClose, WindowStay};
-use rsfml::graphics::{CircleShape, Color, RenderWindow, Texture};
+use rsfml::graphics::{Color, RenderWindow, Texture};
 use rsfml::graphics::rc::Sprite;
 use rsfml::window::{event, keyboard};
 use rsfml::window::event::Event;
@@ -51,11 +51,8 @@ impl Game for FlappyBird {
 	}
 
 	fn draw(&self, window: &mut RenderWindow) {
-		let mut shape: CircleShape = CircleShape::new_init(100.0, 30)
-			.expect("Couldn't create Circle Shape");
-		shape.set_fill_color(&Color::green());
 		window.clear(&Color::black());
-		window.draw(&shape);
+		window.draw(&self.bg);
 		window.display()
 	}
 }
