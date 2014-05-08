@@ -1,21 +1,26 @@
 // vi: ts=4 sw=4
 
 use game::{Game, WindowAction, WindowClose, WindowStay};
+use ground::Ground;
 use rsfml::graphics::{Color, RenderWindow, Texture};
 use rsfml::graphics::rc::Sprite;
+use rsfml::system::vector2::Vector2u;
 use rsfml::window::{event, keyboard};
 use rsfml::window::event::Event;
 use std::cell::RefCell;
 use std::rc::Rc;
 
 pub struct FlappyBird {
-	bg: Sprite,
+	backdrop: Sprite,
+	ground: Ground,
 }
 
 impl FlappyBird {
-	pub fn new() -> FlappyBird {
+	pub fn new(window_size: Vector2u) -> FlappyBird {
 		FlappyBird {
-			bg: FlappyBird::sprite_from_image("resources/background.png"),
+			backdrop: FlappyBird::sprite_from_image("resources/background.png"),
+			ground: Ground::new(window_size,
+				~FlappyBird::sprite_from_image("resources/ground.png"), 0.2f32),
 		}
 	}
 
@@ -47,12 +52,14 @@ impl Game for FlappyBird {
 		}
 	}
 
-	fn update(&mut self, millis: int) {
+	fn update(&mut self, seconds: f32) {
+		self.ground.update(seconds);
 	}
 
 	fn draw(&self, window: &mut RenderWindow) {
 		window.clear(&Color::black());
-		window.draw(&self.bg);
+		window.draw(&self.backdrop);
+		self.ground.draw(window);
 		window.display()
 	}
 }

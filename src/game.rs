@@ -10,6 +10,6 @@ pub enum WindowAction {
 
 pub trait Game {
 	fn handle_event(&mut self, Event) -> WindowAction;
-	fn update(&mut self, int);
+	fn update(&mut self, f32);
 	fn draw(&self, &mut RenderWindow);
 }

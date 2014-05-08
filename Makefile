@@ -1,2 +1,2 @@
-rflappy: *.rs
-	rustc bin.rs -L lib
+rflappy: src/*.rs
+	rustc src/bin.rs -L lib
