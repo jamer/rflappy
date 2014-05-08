@@ -1,6 +1,10 @@
 // vi: ts=4 sw=4
 
-use constants::{BIRD_FRAME_DURATION, BIRD_JUMP_SET_Y_VELOCITY_PIXELS_PER_SECOND, BIRD_X_VELOCITY_PIXELS_PER_SECOND, BIRD_Y_ACCELERATION_PIXELS_PER_SECOND, GROUND_SPIN_FREQUENCY};
+use constants::{BIRD_IMAGE_FRAME_WIDTH, BIRD_IMAGE_FRAME_DURATION,
+	BIRD_IMAGE_FRAME_HEIGHT, BIRD_IMAGE_NFRAMES,
+	BIRD_JUMP_SET_Y_VELOCITY_PIXELS_PER_SECOND,
+	BIRD_X_VELOCITY_PIXELS_PER_SECOND, BIRD_Y_ACCELERATION_PIXELS_PER_SECOND,
+	GROUND_SPIN_FREQUENCY};
 use bird::Bird;
 use game::{Game, WindowAction, WindowClose, WindowStay};
 use ground::Ground;
@@ -18,45 +22,6 @@ pub struct FlappyBird {
 	ground: Ground,
 	bird: Bird,
 	window_size: Vector2u,
-}
-
-impl FlappyBird {
-	pub fn new(window_size: Vector2u) -> FlappyBird {
-		let ground: Ground = Ground::new(window_size,
-				~FlappyBird::sprite_from_image("resources/ground.png"),
-				GROUND_SPIN_FREQUENCY);
-		let floor: f32 = ground.get_top();
-		let bird: Bird = Bird::new(window_size,
-				~FlappyBird::sprite_from_image("resources/bird.png"),
-				Vector2i {x: 85, y: 60},
-				3,
-				BIRD_FRAME_DURATION,
-				floor,
-				BIRD_X_VELOCITY_PIXELS_PER_SECOND,
-				BIRD_Y_ACCELERATION_PIXELS_PER_SECOND);
-
-		FlappyBird {
-			alive: true,
-			backdrop: FlappyBird::sprite_from_image("resources/background.png"),
-			ground: ground,
-			bird: bird,
-			window_size: window_size,
-		}
-	}
-
-	/**
-	 * Generates a new Texture each call, so don't use if you need multiple
-	 * sprites from the same texture.  Textures can be shared across sprites
-	 * in that case.
-	 */
-	fn sprite_from_image(filename: &str) -> Sprite {
-		let texture: Rc<RefCell<Texture>> = Rc::new(RefCell::new(
-			Texture::new_from_file(filename)
-			.expect("Couldn't create Texture from " + filename)));
-		let sprite: Sprite = Sprite::new_with_texture(texture)
-			.expect("Couldn't create Sprite from " + filename);
-		sprite
-	}
 }
 
 impl Game for FlappyBird {
@@ -87,18 +52,9 @@ impl Game for FlappyBird {
 
 	fn update(&mut self, seconds: f32) {
 		self.ground.update(seconds);
-
 		self.bird.update_move(seconds);
-
-		let position = self.bird.get_position();
-		let floor = self.ground.get_top();
-		if position.y <= 0. {
-			self.alive = false;
-		}
-		if position.y == floor {
-			self.alive = false;
-		}
-
+		self.bird.enforce_floor(self.ground.get_top());
+		self.kill_bird();
 		self.bird.update_nonmove(self.alive);
 	}
 
@@ -108,5 +64,53 @@ impl Game for FlappyBird {
 		self.ground.draw(window);
 		self.bird.draw(window);
 		window.display()
+	}
+}
+
+impl FlappyBird {
+	pub fn new(window_size: Vector2u) -> FlappyBird {
+		let ground: Ground = Ground::new(window_size,
+				~FlappyBird::sprite_from_image("resources/ground.png"),
+				GROUND_SPIN_FREQUENCY);
+		let bird: Bird = Bird::new(window_size,
+				~FlappyBird::sprite_from_image("resources/bird.png"),
+				Vector2i {x: BIRD_IMAGE_FRAME_WIDTH, y: BIRD_IMAGE_FRAME_HEIGHT},
+				BIRD_IMAGE_NFRAMES,
+				BIRD_IMAGE_FRAME_DURATION,
+				BIRD_X_VELOCITY_PIXELS_PER_SECOND,
+				BIRD_Y_ACCELERATION_PIXELS_PER_SECOND);
+
+		FlappyBird {
+			alive: true,
+			backdrop: FlappyBird::sprite_from_image("resources/background.png"),
+			ground: ground,
+			bird: bird,
+			window_size: window_size,
+		}
+	}
+
+	/**
+	 * Generates a new Texture each call, so don't use if you need multiple
+	 * sprites from the same texture.  Textures can be shared across sprites
+	 * in that case.
+	 */
+	fn sprite_from_image(filename: &str) -> Sprite {
+		let texture: Rc<RefCell<Texture>> = Rc::new(RefCell::new(
+			Texture::new_from_file(filename)
+			.expect("Couldn't create Texture from " + filename)));
+		let sprite: Sprite = Sprite::new_with_texture(texture)
+			.expect("Couldn't create Sprite from " + filename);
+		sprite
+	}
+
+	fn kill_bird(&mut self) {
+		let position = self.bird.get_position();
+		let floor = self.ground.get_top();
+		if position.y <= 0. {
+			self.alive = false;
+		}
+		if position.y == floor {
+			self.alive = false;
+		}
 	}
 }

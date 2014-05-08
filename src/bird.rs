@@ -13,15 +13,13 @@ pub struct Bird {
 	frame: i32,
 	frame_phase: f32,
 
-	floor: f32,
-
 	x_velocity: f32,
 	y_acceleration: f32,
 	y_velocity: f32,
 }
 
 impl Bird {
-	pub fn new(window_size: Vector2u, sprite: ~Sprite, frame_size: Vector2i, nframes: i32, frame_duration: f32, floor: f32, x_velocity: f32, y_acceleration: f32) -> Bird {
+	pub fn new(window_size: Vector2u, sprite: ~Sprite, frame_size: Vector2i, nframes: i32, frame_duration: f32, x_velocity: f32, y_acceleration: f32) -> Bird {
 		let mut bird = Bird {
 			sprite: sprite,
 			frame_size: frame_size,
@@ -30,8 +28,6 @@ impl Bird {
 
 			frame: 0,
 			frame_phase: 0.,
-
-			floor: floor,
 
 			x_velocity: x_velocity,
 			y_acceleration: y_acceleration,
@@ -74,12 +70,14 @@ impl Bird {
 			x: 0.,
 			y: self.y_velocity * seconds,
 		});
+	}
 
+	pub fn enforce_floor(&mut self, height: f32) {
 		let position = self.sprite.get_position();
-		if position.y >= self.floor {
+		if position.y >= height {
 			self.sprite.set_position(&Vector2f {
 				x: position.x,
-				y: self.floor,
+				y: height,
 			});
 		}
 	}
