@@ -48,13 +48,9 @@ impl Ground {
 			self.phase -= wavelength;
 		}
 
-		let window_size: Vector2f = self.window_size;
-		let image_size: Vector2f = self.image_size;
-		let at_bottom: f32 = window_size.y - image_size.y;
-
 		let new_position: Vector2f = Vector2f {
-			x: -1. * image_size.x * self.phase * self.frequency,
-			y: at_bottom,
+			x: -1. * self.image_size.x * self.phase * self.frequency,
+			y: self.get_top(),
 		};
 		self.sprite.set_position(&new_position);
 	}
@@ -63,7 +59,7 @@ impl Ground {
 		window.draw(self.sprite);
 	}
 
-	pub fn get_height(&self) -> u32 {
-		self.image_size.y as u32
+	pub fn get_top(&self) -> f32 {
+		(self.window_size.y - self.image_size.y) as f32
 	}
 }
