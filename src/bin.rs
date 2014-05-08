@@ -7,6 +7,7 @@ extern crate native;
 extern crate rsfml;
 extern crate time;
 
+mod bird;
 mod constants;
 mod flappy_bird;
 mod game;

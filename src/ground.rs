@@ -35,23 +35,19 @@ impl Ground {
 			phase: 0.,
 			sprite: sprite,
 		};
-		ground.update_for_phase();
+		ground.update(0.);
 
 		ground
 	}
 
 	pub fn update(&mut self, seconds: f32) {
-		let wavelength = 1. / self.frequency;
-
 		self.phase += seconds;
+
+		let wavelength = 1. / self.frequency;
 		while self.phase >= wavelength {
 			self.phase -= wavelength;
 		}
 
-		self.update_for_phase();
-	}
-
-	fn update_for_phase(&mut self) {
 		let window_size: Vector2f = self.window_size;
 		let image_size: Vector2f = self.image_size;
 		let at_bottom: f32 = window_size.y - image_size.y;
@@ -65,5 +61,9 @@ impl Ground {
 
 	pub fn draw(&self, window: &mut RenderWindow) {
 		window.draw(self.sprite);
+	}
+
+	pub fn get_height(&self) -> u32 {
+		self.image_size.y as u32
 	}
 }
