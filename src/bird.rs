@@ -83,11 +83,14 @@ impl Bird {
 	}
 
 	pub fn update_nonmove(&mut self, alive: bool) {
-		if alive {
-			self.set_animation_frame(self.frame);
-			self.sprite.set_rotation(self.y_velocity.atan2(self.x_velocity) / 3.1415 * 180.);
-		} else {
-			self.sprite.set_rotation(90.);
+		match alive {
+			true => {
+				self.set_animation_frame(self.frame);
+				self.sprite.set_rotation(self.y_velocity.atan2(self.x_velocity) / 3.1415 * 180.);
+			},
+			false => {
+				self.sprite.set_rotation(90.);
+			},
 		}
 	}
 

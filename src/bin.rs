@@ -13,5 +13,6 @@ mod flappy_bird;
 mod game;
 mod ground;
 mod main;
+mod pipes;
 mod sfml_start;
 mod window;

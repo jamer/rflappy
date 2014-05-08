@@ -8,6 +8,7 @@ use constants::{BIRD_IMAGE_FRAME_WIDTH, BIRD_IMAGE_FRAME_DURATION,
 use bird::Bird;
 use game::{Game, WindowAction, WindowClose, WindowStay};
 use ground::Ground;
+use pipes::Pipes;
 use rsfml::graphics::{Color, RenderWindow, Texture};
 use rsfml::graphics::rc::Sprite;
 use rsfml::system::vector2::{Vector2i, Vector2u};
@@ -19,6 +20,7 @@ use std::rc::Rc;
 pub struct FlappyBird {
 	alive: bool,
 	backdrop: Sprite,
+	pipes: Pipes,
 	ground: Ground,
 	bird: Bird,
 	window_size: Vector2u,
@@ -51,6 +53,7 @@ impl Game for FlappyBird {
 	}
 
 	fn update(&mut self, seconds: f32) {
+		self.pipes.update(seconds);
 		self.ground.update(seconds);
 		self.bird.update_move(seconds);
 		self.bird.enforce_floor(self.ground.get_top());
@@ -61,6 +64,7 @@ impl Game for FlappyBird {
 	fn draw(&self, window: &mut RenderWindow) {
 		window.clear(&Color::black());
 		window.draw(&self.backdrop);
+		self.pipes.draw(window);
 		self.ground.draw(window);
 		self.bird.draw(window);
 		window.display()
@@ -69,6 +73,7 @@ impl Game for FlappyBird {
 
 impl FlappyBird {
 	pub fn new(window_size: Vector2u) -> FlappyBird {
+		let pipes: Pipes = Pipes::new();
 		let ground: Ground = Ground::new(window_size,
 				~FlappyBird::sprite_from_image("resources/ground.png"),
 				GROUND_SPIN_FREQUENCY);
@@ -83,6 +88,7 @@ impl FlappyBird {
 		FlappyBird {
 			alive: true,
 			backdrop: FlappyBird::sprite_from_image("resources/background.png"),
+			pipes: pipes,
 			ground: ground,
 			bird: bird,
 			window_size: window_size,
