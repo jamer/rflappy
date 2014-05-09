@@ -40,7 +40,7 @@ impl Window {
 			self.pump_events();
 			match self.previous_frame_clock.restart().as_seconds() {
 				0.0f32 => {
-				},
+				}
 				seconds => {
 					self.game.update(seconds);
 				}

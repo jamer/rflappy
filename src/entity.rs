@@ -4,6 +4,6 @@ use rsfml::graphics::RenderWindow;
 
 pub trait Entity {
 	fn reset(&mut self);
-	fn update(&mut self, f32);
+	fn update(&mut self, seconds: f32);
 	fn draw(&self, &mut RenderWindow);
 }

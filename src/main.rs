@@ -1,4 +1,3 @@
-
 // vi: ts=4 sw=4
 
 use constants::{GAME_WIDTH, GAME_HEIGHT};

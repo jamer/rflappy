@@ -49,7 +49,7 @@ impl Game for FlappyBird {
 			event::KeyPressed{code, ..} => match code {
 				keyboard::Escape => {
 					WindowClose
-				},
+				}
 				keyboard::Return if self.alive == false => {
 					self.reset();
 					WindowStay
@@ -60,7 +60,7 @@ impl Game for FlappyBird {
 					}
 					WindowStay
 				}
-			} ,
+			}
 			_ => {WindowStay}
 		}
 	}
