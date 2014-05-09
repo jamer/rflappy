@@ -1,6 +1,7 @@
 // vi: ts=4 sw=4
 
-use rsfml::graphics::{IntRect, Texture, RenderWindow};
+use entity::Entity;
+use rsfml::graphics::{IntRect, RenderWindow, Texture};
 use rsfml::graphics::rc::Sprite;
 use rsfml::system::vector2::{ToVec, Vector2f, Vector2u};
 
@@ -10,6 +11,30 @@ pub struct Ground {
 	frequency: f32,
 	phase: f32,
 	sprite: ~Sprite,
+}
+
+impl Entity for Ground {
+	fn reset(&mut self) {
+	}
+
+	fn update(&mut self, seconds: f32) {
+		self.phase += seconds;
+
+		let wavelength = 1. / self.frequency;
+		while self.phase >= wavelength {
+			self.phase -= wavelength;
+		}
+
+		let new_position: Vector2f = Vector2f {
+			x: -1. * self.image_size.x * self.phase * self.frequency,
+			y: self.get_top(),
+		};
+		self.sprite.set_position(&new_position);
+	}
+
+	fn draw(&self, window: &mut RenderWindow) {
+		window.draw(self.sprite);
+	}
 }
 
 impl Ground {
@@ -43,25 +68,6 @@ impl Ground {
 			height: rect.height,
 		});
 		texture.set_repeated(true);
-	}
-
-	pub fn update(&mut self, seconds: f32) {
-		self.phase += seconds;
-
-		let wavelength = 1. / self.frequency;
-		while self.phase >= wavelength {
-			self.phase -= wavelength;
-		}
-
-		let new_position: Vector2f = Vector2f {
-			x: -1. * self.image_size.x * self.phase * self.frequency,
-			y: self.get_top(),
-		};
-		self.sprite.set_position(&new_position);
-	}
-
-	pub fn draw(&self, window: &mut RenderWindow) {
-		window.draw(self.sprite);
 	}
 
 	pub fn get_top(&self) -> f32 {

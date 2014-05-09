@@ -4,11 +4,12 @@
 #![crate_type = "bin"]
 
 extern crate native;
+extern crate rand;
 extern crate rsfml;
-extern crate time;
 
 mod bird;
 mod constants;
+mod entity;
 mod flappy_bird;
 mod game;
 mod ground;
