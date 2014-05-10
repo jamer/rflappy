@@ -60,7 +60,7 @@ impl Game for FlappyBird {
 					}
 					WindowStay
 				}
-			}
+			},
 			_ => {WindowStay}
 		}
 	}
